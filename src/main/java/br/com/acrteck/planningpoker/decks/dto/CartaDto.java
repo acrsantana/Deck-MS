@@ -1,6 +1,5 @@
 package br.com.acrteck.planningpoker.decks.dto;
 
-import br.com.acrteck.planningpoker.decks.model.Organizacao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +16,5 @@ public class CartaDto implements Serializable {
     @NotNull
     private String valor;
     @NotNull
-    private Organizacao organizacao;
+    private Integer idOrganizacao;
 }
