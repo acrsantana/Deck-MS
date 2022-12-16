@@ -3,11 +3,11 @@ package br.com.acrteck.planningpoker.decks.service;
 import br.com.acrteck.planningpoker.decks.dto.CartaDto;
 import br.com.acrteck.planningpoker.decks.dto.DeckDto;
 import br.com.acrteck.planningpoker.decks.exception.DeckNaoEncontradoException;
+import br.com.acrteck.planningpoker.decks.exception.FalhaAoGravarDecksException;
 import br.com.acrteck.planningpoker.decks.exception.FalhaAoRecuperarCartasException;
 import br.com.acrteck.planningpoker.decks.exception.FalhaAoRecuperarDecksException;
 import br.com.acrteck.planningpoker.decks.http.CartasClient;
 import br.com.acrteck.planningpoker.decks.model.Deck;
-import br.com.acrteck.planningpoker.decks.model.Organizacao;
 import br.com.acrteck.planningpoker.decks.repository.DeckRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,19 +27,25 @@ public class DeckService {
     }
 
     public DeckDto save(DeckDto deckDto) {
-        return new DeckDto(deckRepository.save(new Deck(deckDto)));
+        log.info("Salvando deck");
+        try {
+            return new DeckDto(deckRepository.save(new Deck(deckDto)));
+        } catch (Exception e) {
+            log.error("Falha ao gravar o deck {}", deckDto.getNome());
+            throw new FalhaAoGravarDecksException("Falha ao gravar o deck");
+        }
     }
 
-    public DeckDto findById(Long id, Organizacao organizacao){
+    public DeckDto findById(Long id, Integer organizacao){
         DeckDto deck = recuperaDeckPeloId(id);
-        deck.setOrganizacao(organizacao);
+        deck.setIdOrganizacao(organizacao);
         recuperaCartas(deck);
         return deck;
     }
 
-    public DeckDto findByName(String nome, Organizacao organizacao){
+    public DeckDto findByName(String nome, Integer organizacao){
         DeckDto deck = recuperaDeckPeloNome(nome);
-        deck.setOrganizacao(organizacao);
+        deck.setIdOrganizacao(organizacao);
         recuperaCartas(deck);
         return deck;
     }
@@ -56,9 +62,9 @@ public class DeckService {
     }
 
     private void recuperaCartas(DeckDto deck) {
-        log.info("Buscando cartas vinculadas ao deck {}, organização {}", deck.getNome(), deck.getOrganizacao().name());
+        log.info("Buscando cartas vinculadas ao deck {}, organização {}", deck.getNome(), deck.getIdOrganizacao());
         try {
-            List<CartaDto> cartas = cartasClient.obtemCartasPorOrganizacao(deck.getOrganizacao());
+            List<CartaDto> cartas = cartasClient.obtemCartasPorOrganizacao(deck.getIdOrganizacao());
             log.debug("Buscou as cartas no microsserviço");
             deck.setCartas(cartas);
         } catch (Exception e) {

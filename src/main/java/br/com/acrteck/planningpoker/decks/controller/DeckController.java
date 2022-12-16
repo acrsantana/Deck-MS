@@ -5,13 +5,15 @@ import br.com.acrteck.planningpoker.decks.exception.DeckNaoEncontradoException;
 import br.com.acrteck.planningpoker.decks.exception.FalhaAoRecuperarArquivoException;
 import br.com.acrteck.planningpoker.decks.exception.FalhaAoRecuperarCartasException;
 import br.com.acrteck.planningpoker.decks.exception.FalhaAoRecuperarDecksException;
-import br.com.acrteck.planningpoker.decks.model.Organizacao;
 import br.com.acrteck.planningpoker.decks.service.DeckService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -28,7 +30,7 @@ public class DeckController {
     }
 
     @GetMapping("/id/{id}/organizacao/{organizacao}")
-    public ResponseEntity<DeckDto> findById(@PathVariable Long id, @PathVariable Organizacao organizacao){
+    public ResponseEntity<DeckDto> findById(@PathVariable Long id, @PathVariable Integer organizacao){
         try {
             return ResponseEntity.ok(deckService.findById(id, organizacao));
         } catch (FalhaAoRecuperarArquivoException | FalhaAoRecuperarCartasException e) {
@@ -41,7 +43,7 @@ public class DeckController {
     }
 
     @GetMapping("/nome/{nome}/organizacao/{organizacao}")
-    public ResponseEntity<DeckDto> findByNome(@PathVariable String nome, @PathVariable Organizacao organizacao){
+    public ResponseEntity<DeckDto> findByNome(@PathVariable String nome, @PathVariable Integer organizacao){
         try {
             return ResponseEntity.ok(deckService.findByName(nome, organizacao));
         } catch (FalhaAoRecuperarArquivoException | FalhaAoRecuperarCartasException e) {
