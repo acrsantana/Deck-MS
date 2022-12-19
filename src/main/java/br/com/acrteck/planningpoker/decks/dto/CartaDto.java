@@ -17,4 +17,5 @@ public class CartaDto implements Serializable {
     private String valor;
     @NotNull
     private Integer idOrganizacao;
+    private String organizacao;
 }

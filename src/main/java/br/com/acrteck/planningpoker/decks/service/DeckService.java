@@ -11,6 +11,7 @@ import br.com.acrteck.planningpoker.decks.model.Deck;
 import br.com.acrteck.planningpoker.decks.repository.DeckRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,12 +38,14 @@ public class DeckService {
     }
 
     public DeckDto findById(Long id, Integer organizacao){
+        log.info("Iniciando busca pelo id {}, organizacao {}", id, organizacao);
         DeckDto deck = recuperaDeckPeloId(id);
         deck.setIdOrganizacao(organizacao);
         recuperaCartas(deck);
         return deck;
     }
 
+    @Transactional
     public DeckDto findByName(String nome, Integer organizacao){
         DeckDto deck = recuperaDeckPeloNome(nome);
         deck.setIdOrganizacao(organizacao);

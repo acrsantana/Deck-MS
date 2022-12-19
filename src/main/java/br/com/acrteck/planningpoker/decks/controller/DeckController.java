@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
 import java.util.List;
 
 @Controller @Slf4j
@@ -29,10 +30,10 @@ public class DeckController {
         this.deckService = deckService;
     }
 
-    @GetMapping("/id/{id}/organizacao/{organizacao}")
-    public ResponseEntity<DeckDto> findById(@PathVariable Long id, @PathVariable Integer organizacao){
+    @GetMapping("/id/{id}/organizacao/{idOrganizacao}")
+    public ResponseEntity<DeckDto> findById(@PathVariable Long id, @PathVariable Integer idOrganizacao){
         try {
-            return ResponseEntity.ok(deckService.findById(id, organizacao));
+            return ResponseEntity.ok(deckService.findById(id, idOrganizacao));
         } catch (FalhaAoRecuperarArquivoException | FalhaAoRecuperarCartasException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,12 +66,14 @@ public class DeckController {
         }
     }
 
-    @PostMapping(consumes = "multipart/form-data")
-    public  ResponseEntity<?> save(
-        @RequestPart("deckDto") @Valid DeckDto deckDto,
+    @PostMapping("/{nome}")
+    @Consumes({"multipart/form-data,application/json"})
+    public  ResponseEntity<DeckDto> save(@PathVariable String nome,
         @RequestPart("arquivo") @Valid @NotNull MultipartFile arquivo
     ){
         try {
+            DeckDto deckDto = new DeckDto();
+            deckDto.setNome(nome);
             deckDto.setArquivo(arquivo.getBytes());
             return ResponseEntity.ok(deckService.save(deckDto));
         } catch (Exception e) {
